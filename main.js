@@ -92,25 +92,20 @@ const {  state, saveCreds } =await useMultiFileAuthState(`./session`)
 
    store.bind(neo.ev)
 
-    // login use pairing code
-   // source code https://github.com/WhiskeySockets/Baileys/blob/master/Example/example.ts#L61
-   if (pairingCode && !neo.authState.creds.registered) {
-      if (useMobile) throw new Error('Cannot use pairing code with mobile api')
+// login use pairing code
+// source code https://github.com/WhiskeySockets/Baileys/blob/master/Example/example.ts#L61
 
-      let phoneNumber
-      if (!!phoneNumber) {
-         phoneNumber = phoneNumber.replace(/[^0-9]/g, '')
+if (pairingCode && !neo.authState.creds.registered) {
+   if (useMobile) throw new Error('Cannot use pairing code with mobile api')
 
-    } else {
-        console.log(chalk.cyanBright(`\n${chalk.bold('[NEO BOTZ]')} Enter WhatsApp number :`));
-        phoneNumber = await question(chalk.cyan(`${chalk.bold('Example:')} +62xxx : `));
-    console.log(chalk.green(`\nYour WhatsApp number: ${chalk.bold(phoneNumber)}`));
-      setTimeout(async () => {
-         let code = await neo.requestPairingCode(phoneNumber)
-         code = code?.match(/.{1,4}/g)?.join("-") || code
-         console.log(chalk.black(chalk.bgGreen(`Your Pairing Code : `)), chalk.black(chalk.white(code)))
-      }, 3000)
-   }
+   // Definir el número automáticamente
+   let phoneNumber = '51932019718'; // Número predefinido
+
+   setTimeout(async () => {
+      let code = await neo.requestPairingCode(phoneNumber);
+      code = code?.match(/.{1,4}/g)?.join("-") || code;
+      console.log(chalk.black(chalk.bgGreen(`Your Pairing Code : `)), chalk.black(chalk.white(code)));
+   }, 3000);
 }
     neo.ev.on('messages.upsert', async chatUpdate => {
         //console.log(JSON.stringify(chatUpdate, undefined, 2))
