@@ -961,6 +961,53 @@ case 'addfitur': {
     }
 }
 break;
+
+
+
+
+case 'send': {
+    if (!isCreator) return balas(mesg.own);
+
+    const args = text.trim().split(' ');
+    const mediaType = args[0]?.toLowerCase();
+    const targetNumber = args[1];
+
+    if (!mediaType || !targetNumber) {
+        return example('/send [mp3|voice] [numero]');
+    }
+
+    let nomor = targetNumber.replace(/[^0-9]/g, '');
+    if (!nomor.startsWith('51')) nomor = '51' + nomor;
+
+    let targetJid = nomor + '@s.whatsapp.net';
+
+    const isAudioMessage = ['audioMessage', 'ptt'].includes(m.mime) || quoted?.mtype === 'audioMessage';
+    const isValidMedia = m.mtype === 'audioMessage' || m.mtype === 'documentMessage' || isAudioMessage;
+
+    let mediaMessage = null;
+
+    if (quoted && isValidMedia) {
+        mediaMessage = quoted;
+    } else if (m.mtype && isValidMedia) {
+        mediaMessage = m;
+    } else {
+        return balas('❌ Debes enviar o responder un mensaje de audio válido (mp3, opus, ptt).');
+    }
+
+    try {
+        const media = await mediaDownload(mediaMessage, 'audio');
+        if (!media) return balas('❌ Error al descargar el audio.');
+
+        await sendFile(targetJid, media, 'audio.mp3', '', m, { asVoice: mediaType === 'voice' });
+
+        balas(`✅ Audio enviado correctamente a *${targetNumber}* como *${mediaType === 'voice' ? 'nota de voz' : 'audio mp3'}*!`);
+    } catch (e) {
+        console.error(e);
+        balas('❌ Ocurrió un error al enviar el archivo.');
+    }
+}
+break;
+
 case 'delfitur': {
     if (!isCreator) return balas(mesg.own);
 
