@@ -965,7 +965,7 @@ break;
 
 
 
-case 'send': {
+case 'sendmg': {
     if (!isCreator) return balas(mesg.own);
 
     const args = text.trim().split(' ');
